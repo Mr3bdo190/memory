@@ -1,28 +1,24 @@
-name: Build APK
-
-on:
-  push:
-    branches: [ main ]
-
+name: Build Memory App APK
+on: [push]
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
       - uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-          cache: true
-
-      - name: Install dependencies
-        run: flutter pub get
-
-      - name: Build APK
-        run: flutter build apk --release
-
+      - name: Repair and Config
+        run: |
+          if [ ! -d "android" ]; then
+            flutter create . --overwrite --platforms android
+          fi
+          # إضافة سطر جوجل سيرفس في ملفات الـ Gradle
+          sed -i 's/id "com.android.application" /id "com.android.application" \n    id "com.google.gms.google-services" /' android/app/build.gradle
+          flutter pub get
+          flutter build apk --release
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: memory-app
+          name: memory-release-apk
           path: build/app/outputs/flutter-apk/app-release.apk

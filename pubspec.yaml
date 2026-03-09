@@ -1,17 +1,22 @@
-name: our_space_app
-description: App for memories and topics.
+name: memory
+description: A private app for memories and topics.
 publish_to: 'none'
 version: 1.0.0+1
+
 environment:
   sdk: '>=3.0.0 <4.0.0'
+
 dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.5
   firebase_core: any
   cloud_firestore: any
+  firebase_auth: any
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
+
 flutter:
   uses-material-design: true

@@ -27,15 +27,15 @@ class _AuthScreenState extends State<AuthScreen> {
             email: _emailController.text.trim(),
             password: _passwordController.text.trim());
         
-        // حفظ بيانات المستخدم الجديد للبحث والارتباط
         await FirebaseFirestore.instance.collection('users').doc(userCred.user!.uid).set({
           'uid': userCred.user!.uid,
           'name': _nameController.text.trim(),
           'email': _emailController.text.trim(),
-          'partnerUid': null, // لسه مرتبطش بحد
+          'partnerUid': null,
         });
       }
-      Navigator.pushReplacementNamed(context, '/home');
+      // التوجيه لصفحة الارتباط للتأكد من وجود شريك
+      Navigator.pushReplacementNamed(context, '/connection');
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
     }
@@ -47,10 +47,10 @@ class _AuthScreenState extends State<AuthScreen> {
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
-          image: DecorationImage(
-            // خلفية رومانسية أو هادية عشان تبين تأثير الزجاج
-            image: NetworkImage('https://images.unsplash.com/photo-1518599904199-0ca897819ddb?q=80&w=1000&auto=format&fit=crop'),
-            fit: BoxFit.cover,
+          gradient: LinearGradient(
+            colors: [Colors.black, Colors.red.shade900],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
           ),
         ),
         child: Center(
@@ -61,7 +61,7 @@ class _AuthScreenState extends State<AuthScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text("Memory ♾️", style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Colors.white)),
+                  Text("Memory ❤️", style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Colors.white)),
                   SizedBox(height: 20),
                   if (!isLogin)
                     TextField(
@@ -82,10 +82,10 @@ class _AuthScreenState extends State<AuthScreen> {
                   ),
                   SizedBox(height: 30),
                   isLoading 
-                    ? CircularProgressIndicator(color: Colors.white)
+                    ? CircularProgressIndicator(color: Colors.redAccent)
                     : ElevatedButton(
                         onPressed: authenticate,
-                        style: ElevatedButton.styleFrom(backgroundColor: Colors.white.withOpacity(0.3), shadowColor: Colors.transparent, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15))),
+                        style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent.withOpacity(0.8), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15))),
                         child: Padding(padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15), child: Text(isLogin ? "دخول" : "إنشاء حساب", style: TextStyle(color: Colors.white, fontSize: 18))),
                       ),
                   TextButton(

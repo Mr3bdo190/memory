@@ -67,18 +67,18 @@ class _AuthScreenState extends State<AuthScreen> {
                     TextField(
                       controller: _nameController,
                       style: TextStyle(color: Colors.white),
-                      decoration: InputDecoration(labelText: "الاسم", labelStyle: TextStyle(color: Colors.white70), enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white50))),
+                      decoration: InputDecoration(labelText: "الاسم", labelStyle: TextStyle(color: Colors.white70), enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white54))),
                     ),
                   TextField(
                     controller: _emailController,
                     style: TextStyle(color: Colors.white),
-                    decoration: InputDecoration(labelText: "البريد الإلكتروني", labelStyle: TextStyle(color: Colors.white70), enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white50))),
+                    decoration: InputDecoration(labelText: "البريد الإلكتروني", labelStyle: TextStyle(color: Colors.white70), enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white54))),
                   ),
                   TextField(
                     controller: _passwordController,
                     obscureText: true,
                     style: TextStyle(color: Colors.white),
-                    decoration: InputDecoration(labelText: "كلمة المرور", labelStyle: TextStyle(color: Colors.white70), enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white50))),
+                    decoration: InputDecoration(labelText: "كلمة المرور", labelStyle: TextStyle(color: Colors.white70), enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white54))),
                   ),
                   SizedBox(height: 30),
                   isLoading 

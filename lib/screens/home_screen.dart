@@ -173,6 +173,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           _buildCard(context, "الذكريات", Icons.photo_album, () => Navigator.pushNamed(context, '/memories', arguments: {'chatId': chatId})),
                           _buildCard(context, "مواضيع النقاش", Icons.topic, () => Navigator.pushNamed(context, '/topics', arguments: {'chatId': chatId})),
                           _buildCard(context, "أيامنا الحلوة", Icons.calendar_month, () => Navigator.pushNamed(context, '/countdown', arguments: {'chatId': chatId})),
+                          _buildCard(context, "كبسولة الزمن", Icons.lock_clock, () => Navigator.pushNamed(context, "/capsule", arguments: {"chatId": chatId})),
+                          _buildCard(context, "نوتة لقائنا", Icons.note_alt, () => Navigator.pushNamed(context, "/notes", arguments: {"chatId": chatId})),
+                          _buildCard(context, "رادار الحب", Icons.location_on, () => Navigator.pushNamed(context, "/location", arguments: {"partnerUid": partnerUid})),
                           _buildCard(context, "تسجيل خروج", Icons.exit_to_app, () {
                             FirebaseAuth.instance.signOut();
                             Navigator.pushReplacementNamed(context, '/');

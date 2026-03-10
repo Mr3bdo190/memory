@@ -1,22 +1,26 @@
 name: memory
-description: Private memories and topics app with Cloudinary and Firebase.
+description: Private memories and topics app.
 publish_to: 'none'
 version: 1.0.0+1
+
 environment:
   sdk: '>=3.0.0 <4.0.0'
+
 dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.5
-  firebase_core: ^2.24.2
-  firebase_auth: ^4.15.3
-  cloud_firestore: ^4.13.6
-  cloudinary_url_gen: ^0.1.0
-  cloudinary_flutter: ^1.1.0
-  image_picker: ^1.0.4
-  provider: ^6.1.1
+  firebase_core: any
+  firebase_auth: any
+  cloud_firestore: any
+  cloudinary_url_gen: ^1.8.0
+  cloudinary_flutter: any
+  image_picker: any
+  provider: any
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
+
 flutter:
   uses-material-design: true

@@ -1,31 +1,28 @@
-name: Build Memory App APK
-on: [push]
+name: Generate and Push Flutter Files
+
+on:
+  push:
+    branches: [ main ]
+
 jobs:
-  build:
+  generate:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # علشان الـ Action يقدر يرفع الملفات للريبو
     steps:
       - uses: actions/checkout@v4
+      
       - uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-      - name: Repair and Config
+          
+      - name: Generate Android Files
+        run: flutter create . --platforms android
+
+      - name: Commit and Push back
         run: |
-          # 1. نتأكد من وجود ملف الجرادل نفسه، لو مش موجود نخليه يبني أندرويد من جديد
-          if [ ! -f "android/build.gradle" ] && [ ! -f "android/build.gradle.kts" ]; then
-            flutter create . --overwrite --platforms android
-          fi
-          
-          # 2. حقن بيانات فايربيز بذكاء (بدون ما يوقف الـ Build لو الملف اختلف)
-          sed -i 's/id "com.android.application"/id "com.android.application"\n    id "com.google.gms.google-services"/g' android/app/build.gradle 2>/dev/null || true
-          sed -i 's/id("com.android.application")/id("com.android.application")\n    id("com.google.gms.google-services")/g' android/app/build.gradle.kts 2>/dev/null || true
-          
-          sed -i 's/dependencies {/dependencies {\n        classpath "com.google.gms:google-services:4.4.0"/g' android/build.gradle 2>/dev/null || true
-          
-          # 3. بناء التطبيق
-          flutter pub get
-          flutter build apk --release
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: memory-release-apk
-          path: build/app/outputs/flutter-apk/app-release.apk
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add android/
+          git commit -m "Auto-generated Flutter Android files" || echo "No changes to commit"
+          git push

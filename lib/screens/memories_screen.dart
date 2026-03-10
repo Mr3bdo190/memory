@@ -17,12 +17,11 @@ class _MemoriesScreenState extends State<MemoriesScreen> {
   bool _isUploading = false;
 
   void _uploadMemory(String chatId) async {
-    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+    final XFile? image = await _picker.pickImage(source: ImageSource.gallery, imageQuality: 70); // جودة 70% للسرعة
     if (image == null) return;
 
     TextEditingController captionController = TextEditingController();
 
-    // نافذة لكتابة تعليق على الصورة قبل الرفع
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -63,12 +62,10 @@ class _MemoriesScreenState extends State<MemoriesScreen> {
 
   void _processUpload(String chatId, File imageFile, String caption) async {
     setState(() => _isUploading = true);
-    
-    // رفع الصورة لـ Cloudinary
+
     String? imageUrl = await _mediaService.uploadImage(imageFile);
-    
+
     if (imageUrl != null) {
-      // حفظ البيانات في Firestore
       await FirebaseFirestore.instance.collection('chats').doc(chatId).collection('memories').add({
         'imageUrl': imageUrl,
         'caption': caption,
@@ -78,8 +75,31 @@ class _MemoriesScreenState extends State<MemoriesScreen> {
     } else {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("فشل رفع الصورة، تأكد من الإنترنت.")));
     }
-    
+
     setState(() => _isUploading = false);
+  }
+
+  // ميزة مسح الذكرى الجديدة
+  void _deleteMemory(String chatId, String docId) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: Colors.black87,
+        title: Text("مسح الذكرى؟", style: TextStyle(color: Colors.white)),
+        content: Text("متأكد إنك عايز تمسح الذكرى دي؟ مش هترجع تاني!", style: TextStyle(color: Colors.white70)),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: Text("إلغاء", style: TextStyle(color: Colors.white54))),
+          TextButton(
+            onPressed: () {
+              FirebaseFirestore.instance.collection('chats').doc(chatId).collection('memories').doc(docId).delete();
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("تم مسح الذكرى")));
+            },
+            child: Text("مسح", style: TextStyle(color: Colors.redAccent)),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -97,33 +117,41 @@ class _MemoriesScreenState extends State<MemoriesScreen> {
             StreamBuilder<QuerySnapshot>(
               stream: FirebaseFirestore.instance.collection('chats').doc(chatId).collection('memories').orderBy('timestamp', descending: true).snapshots(),
               builder: (context, snapshot) {
-                if (!snapshot.hasData)  
-                var docs = snapshot.data!.docs;
-                if (docs.isEmpty) return Center(child: Text("مفيش ذكريات لسه، ضيف أول ذكرى ليكم! ❤️", style: TextStyle(color: Colors.white70, fontSize: 18)));
+                if (!snapshot.hasData) return Center(child: CircularProgressIndicator(color: Colors.redAccent));
                 
+                var docs = snapshot.data!.docs; // السطر اللي كان مفقود أهو رجع!
+                
+                if (docs.isEmpty) return Center(child: Text("مفيش ذكريات لسه، ضيف أول ذكرى ليكم! ❤️", style: TextStyle(color: Colors.white70, fontSize: 18)));
+
                 return GridView.builder(
                   padding: EdgeInsets.only(top: 100, left: 10, right: 10, bottom: 80),
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, crossAxisSpacing: 10, mainAxisSpacing: 10, childAspectRatio: 0.8),
                   itemCount: docs.length,
                   itemBuilder: (context, index) {
                     var doc = docs[index];
-                    return GlassContainer(
-                      padding: 10,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          Expanded(
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(15),
-                              child: CachedNetworkImage(imageUrl: doc['imageUrl'], fit: BoxFit.cover, placeholder: (context, url) => Center(child: CircularProgressIndicator(color: Colors.redAccent)), errorWidget: (context, url, error) => Icon(Icons.error, color: Colors.white),
-                                 
-                                 
-                              )
+                    return GestureDetector(
+                      onLongPress: () => _deleteMemory(chatId, doc.id), // ربطنا زرار الحذف هنا
+                      child: GlassContainer(
+                        padding: 10,
+                        enableBlur: false, // لغينا الفلتر التقيل عشان التمرير يبقى سلس
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Expanded(
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(15),
+                                child: CachedNetworkImage(
+                                  imageUrl: doc['imageUrl'],
+                                  fit: BoxFit.cover,
+                                  placeholder: (context, url) => Center(child: CircularProgressIndicator(color: Colors.redAccent)),
+                                  errorWidget: (context, url, error) => Icon(Icons.error, color: Colors.white),
+                                ),
+                              ),
                             ),
-                          ),
-                          SizedBox(height: 10),
-                          Text(doc['caption'], style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold), maxLines: 2, overflow: TextOverflow.ellipsis, textAlign: TextAlign.center),
-                        ],
+                            SizedBox(height: 10),
+                            Text(doc['caption'], style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold), maxLines: 2, overflow: TextOverflow.ellipsis, textAlign: TextAlign.center),
+                          ],
+                        ),
                       ),
                     );
                   },

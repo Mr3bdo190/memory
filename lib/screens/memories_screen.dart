@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import '../widgets/glass_container.dart';
 import '../services/media_service.dart';
 
@@ -96,7 +97,7 @@ class _MemoriesScreenState extends State<MemoriesScreen> {
             StreamBuilder<QuerySnapshot>(
               stream: FirebaseFirestore.instance.collection('chats').doc(chatId).collection('memories').orderBy('timestamp', descending: true).snapshots(),
               builder: (context, snapshot) {
-                if (!snapshot.hasData) return Center(child: CircularProgressIndicator(color: Colors.redAccent));
+                if (!snapshot.hasData)  
                 var docs = snapshot.data!.docs;
                 if (docs.isEmpty) return Center(child: Text("مفيش ذكريات لسه، ضيف أول ذكرى ليكم! ❤️", style: TextStyle(color: Colors.white70, fontSize: 18)));
                 
@@ -114,10 +115,10 @@ class _MemoriesScreenState extends State<MemoriesScreen> {
                           Expanded(
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(15),
-                              child: Image.network(doc['imageUrl'], fit: BoxFit.cover, loadingBuilder: (context, child, progress) {
-                                if (progress == null) return child;
-                                return Center(child: CircularProgressIndicator(color: Colors.redAccent));
-                              }),
+                              child: CachedNetworkImage(imageUrl: doc['imageUrl'], fit: BoxFit.cover, placeholder: (context, url) => Center(child: CircularProgressIndicator(color: Colors.redAccent)), errorWidget: (context, url, error) => Icon(Icons.error, color: Colors.white),
+                                 
+                                 
+                              )
                             ),
                           ),
                           SizedBox(height: 10),

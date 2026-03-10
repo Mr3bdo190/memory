@@ -12,6 +12,7 @@ dependencies:
   firebase_auth: any
   cloud_firestore: any
   cloudinary_url_gen: ^1.8.0
+  cached_network_image: any
   cloudinary_flutter: any
   image_picker: any
   provider: any

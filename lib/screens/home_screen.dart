@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import '../widgets/glass_container.dart';
 import '../services/media_service.dart';
 
@@ -25,7 +26,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _changeProfilePic() async {
-    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+    final XFile? image = await _picker.pickImage(source: ImageSource.gallery, imageQuality: 50); // تقليل جودة الصورة لسرعة الرفع
     if (image == null) return;
     
     setState(() => _isUploading = true);
@@ -85,17 +86,15 @@ class _HomeScreenState extends State<HomeScreen> {
                 padding: EdgeInsets.all(16.0),
                 child: Column(
                   children: [
-                    // قسم الحالة المزاجية والصور
                     GlassContainer(
                       height: 160,
                       padding: 15,
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
-                          // بروفايلك
                           GestureDetector(
                             onTap: _changeProfilePic,
-                            onLongPress: _showMoodPicker, // اضغط مطولاً لتغيير المود
+                            onLongPress: _showMoodPicker,
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
@@ -105,7 +104,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     CircleAvatar(
                                       radius: 35,
                                       backgroundColor: Colors.white24,
-                                      backgroundImage: myPic != null ? NetworkImage(myPic) : null,
+                                      backgroundImage: myPic != null ? CachedNetworkImageProvider(myPic) : null,
                                       child: myPic == null ? Icon(Icons.person, color: Colors.white, size: 35) : null,
                                     ),
                                     if (_isUploading) CircularProgressIndicator(color: Colors.redAccent),
@@ -121,10 +120,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               ],
                             ),
                           ),
-                          
                           Icon(Icons.favorite, color: Colors.redAccent, size: 40),
-
-                          // بروفايل الشريك (باستخدام Stream تاني عشان يتحدث لحظياً)
                           if (partnerUid.isNotEmpty)
                             StreamBuilder<DocumentSnapshot>(
                               stream: FirebaseFirestore.instance.collection('users').doc(partnerUid).snapshots(),
@@ -141,7 +137,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     CircleAvatar(
                                       radius: 35,
                                       backgroundColor: Colors.white24,
-                                      backgroundImage: partnerPic.isNotEmpty ? NetworkImage(partnerPic) : null,
+                                      backgroundImage: partnerPic.isNotEmpty ? CachedNetworkImageProvider(partnerPic) : null,
                                       child: partnerPic.isEmpty ? Icon(Icons.person, color: Colors.white, size: 35) : null,
                                     ),
                                     SizedBox(height: 8),
@@ -159,10 +155,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                     SizedBox(height: 15),
-                    Center(child: Text("اضغط مطولاً على صورتك لتغيير حالتك المزاجية", style: TextStyle(color: Colors.white54, fontSize: 12))),
-                    SizedBox(height: 20),
-
-                    // باقي أزرار التطبيق
                     Expanded(
                       child: GridView.count(
                         crossAxisCount: 2,
@@ -173,13 +165,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           _buildCard(context, "الذكريات", Icons.photo_album, () => Navigator.pushNamed(context, '/memories', arguments: {'chatId': chatId})),
                           _buildCard(context, "مواضيع النقاش", Icons.topic, () => Navigator.pushNamed(context, '/topics', arguments: {'chatId': chatId})),
                           _buildCard(context, "أيامنا الحلوة", Icons.calendar_month, () => Navigator.pushNamed(context, '/countdown', arguments: {'chatId': chatId})),
-                          _buildCard(context, "كبسولة الزمن", Icons.lock_clock, () => Navigator.pushNamed(context, "/capsule", arguments: {"chatId": chatId})),
-                          _buildCard(context, "نوتة لقائنا", Icons.note_alt, () => Navigator.pushNamed(context, "/notes", arguments: {"chatId": chatId})),
-                          _buildCard(context, "رادار الحب", Icons.location_on, () => Navigator.pushNamed(context, "/location", arguments: {"partnerUid": partnerUid})),
-                          _buildCard(context, "تسجيل خروج", Icons.exit_to_app, () {
-                            FirebaseAuth.instance.signOut();
-                            Navigator.pushReplacementNamed(context, '/');
-                          }),
+                          _buildCard(context, "قائمة السهرة", Icons.movie, () => Navigator.pushNamed(context, '/watchlist', arguments: {'chatId': chatId})),
+                          _buildCard(context, "نوتة لقائنا", Icons.note_alt, () => Navigator.pushNamed(context, '/notes', arguments: {'chatId': chatId})),
                         ],
                       ),
                     ),
@@ -197,12 +184,13 @@ class _HomeScreenState extends State<HomeScreen> {
     return GestureDetector(
       onTap: onTap,
       child: GlassContainer(
+        enableBlur: false, // هنا قفلنا الفلتر التقيل عن الزراير
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(icon, color: Colors.white, size: 40),
             SizedBox(height: 15),
-            Text(title, style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
+            Text(title, style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
           ],
         ),
       ),

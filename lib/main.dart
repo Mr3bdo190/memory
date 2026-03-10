@@ -10,6 +10,8 @@ import 'screens/countdown_screen.dart';
 import 'screens/time_capsule_screen.dart';
 import 'screens/shared_notes_screen.dart';
 import 'screens/location_screen.dart';
+import 'screens/watchlist_screen.dart';
+import 'screens/roulette_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -36,6 +38,8 @@ class MemoryApp extends StatelessWidget {
         '/capsule': (context) => TimeCapsuleScreen(),
         '/notes': (context) => SharedNotesScreen(),
         '/location': (context) => LocationScreen(),
+        '/watchlist': (context) => WatchlistScreen(),
+        '/roulette': (context) => RouletteScreen(),
       },
     );
   }

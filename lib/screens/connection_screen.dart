@@ -85,7 +85,7 @@ class _ConnectionScreenState extends State<ConnectionScreen> {
             var userData = snapshot.data!.data() as Map<String, dynamic>?;
             
             if (userData != null && userData['partnerUid'] != null) {
-              WidgetsBinding.instance.addPostFrameCallback((_) {
+              Future.microtask(() {
                 Navigator.pushReplacementNamed(context, '/home');
               });
               return Center(child: Text("جاري الدخول لعالمكم الخاص...", style: TextStyle(color: Colors.white)));

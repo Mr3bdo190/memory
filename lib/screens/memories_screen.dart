@@ -17,7 +17,7 @@ class _MemoriesScreenState extends State<MemoriesScreen> {
   bool _isUploading = false;
 
   void _uploadMemory(String chatId) async {
-    final XFile? image = await _picker.pickImage(source: ImageSource.gallery, imageQuality: 70); // جودة 70% للسرعة
+    final XFile? image = await _picker.pickImage(source: ImageSource.gallery, imageQuality: 70); 
     if (image == null) return;
 
     TextEditingController captionController = TextEditingController();
@@ -79,7 +79,6 @@ class _MemoriesScreenState extends State<MemoriesScreen> {
     setState(() => _isUploading = false);
   }
 
-  // ميزة مسح الذكرى الجديدة
   void _deleteMemory(String chatId, String docId) {
     showDialog(
       context: context,
@@ -119,7 +118,7 @@ class _MemoriesScreenState extends State<MemoriesScreen> {
               builder: (context, snapshot) {
                 if (!snapshot.hasData) return Center(child: CircularProgressIndicator(color: Colors.redAccent));
                 
-                var docs = snapshot.data!.docs; // السطر اللي كان مفقود أهو رجع!
+                var docs = snapshot.data!.docs; 
                 
                 if (docs.isEmpty) return Center(child: Text("مفيش ذكريات لسه، ضيف أول ذكرى ليكم! ❤️", style: TextStyle(color: Colors.white70, fontSize: 18)));
 
@@ -130,10 +129,10 @@ class _MemoriesScreenState extends State<MemoriesScreen> {
                   itemBuilder: (context, index) {
                     var doc = docs[index];
                     return GestureDetector(
-                      onLongPress: () => _deleteMemory(chatId, doc.id), // ربطنا زرار الحذف هنا
+                      onLongPress: () => _deleteMemory(chatId, doc.id), 
                       child: GlassContainer(
                         padding: 10,
-                        enableBlur: false, // لغينا الفلتر التقيل عشان التمرير يبقى سلس
+                        enableBlur: false, 
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
